@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .feed-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .feed {
+            border: 1px solid black;
+            margin: 10px;
+            padding: 10px;
+        }
+        @font-face {
+            font-family: "San Francisco";
+            font-weight: 400;
+            src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-regular-webfont.woff");
+        }
+          
+        body, * {
+            font-family: "San Francisco", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='images/m3wallpaper.png') }}");
+            background-size: cover;
+            background-attachment: fixed;
+            color: #333;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 1.1em;
+            color: #000000;
+            margin: 5px 0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .video-box {
+            width: auto;
+            height: auto;
+            background-color: #000;
+            margin-bottom: 10px;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand, .nav-link {
+            color: #ffffff !important;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #17a2b8 !important;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-outline-light:hover {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+    </style>
+    <script>
+        // Function to dynamically update patient feeds based on the number of detected patients
+        function updateFeeds() {
+            fetch('/get_patient_count')
+                .then(response => response.json())
+                .then(data => {
+                    const patientCount = data.patient_count;
+                    const feedContainer = document.getElementById('patient-feed-container');
+                    feedContainer.innerHTML = '';  // Clear existing patient feeds
+    
+                    // Create a new video feed for each patient
+                    for (let i = 1; i <= patientCount; i++) {
+                        // Create the card container div
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card';
+
+                        // Create the card body div
+                        const cardBodyDiv = document.createElement('div');
+                        cardBodyDiv.className = 'card-body';
+
+                        // Card title for patient number
+                        const cardTitle = document.createElement('h5');
+                        cardTitle.className = 'card-title';
+                        cardTitle.textContent = `Patient ${i}`;
+
+                        // Create the video box div
+                        const videoBox = document.createElement('div');
+                        videoBox.className = 'video-box';
+
+                        // Create the <img> element for the video feed
+                        const patientImg = document.createElement('img');
+                        patientImg.src = `/video_feed/${i}`;
+                        patientImg.alt = `Patient ${i}`;
+                        patientImg.style.width = '480px';
+                        patientImg.style.height = 'auto';
+
+                        // // Placeholders for dynamic status and movement
+                        // const statusText = document.createElement('p');
+                        // statusText.className = 'card-text';
+
+                        // const movementText = document.createElement('p');
+                        // movementText.className = 'card-text';
+
+                        // // Listen for position alert SSE
+                        // const positionAlertSource = new EventSource(`/get_patient_position_alert/${i}`);
+                        // positionAlertSource.onmessage = function (event) {
+                        //     let status = (event.data === 'true');  // Convert 'true'/'false' string to boolean
+                        //     statusText.innerHTML = `<strong>Status:</strong> ${status ? 'NEEDS POSITION CHANGE' : 'OK'}`;
+                        // };
+                        
+                        // // Listen for joint alert SSE
+                        // const jointAlertSource = new EventSource(`/get_patient_joint_alert/${i}`);
+                        // jointAlertSource.onmessage = function (event) {
+                        //     let status = (event.data === 'true');  // Convert 'true'/'false' string to boolean
+                        //     movementText.innerHTML = `<strong>Joint Movement:</strong> ${movement ? 'NEEDS JOINT MOVEMENT' : 'OK'}`;
+                        // };
+
+                        // Append the elements to the card body
+                        videoBox.appendChild(patientImg);
+                        cardBodyDiv.appendChild(cardTitle);
+                        // cardBodyDiv.appendChild(statusText);
+                        // cardBodyDiv.appendChild(movementText);
+                        cardBodyDiv.appendChild(videoBox);
+                        cardDiv.appendChild(cardBodyDiv);
+                        feedContainer.appendChild(cardDiv);
+                    }
+                });
+        }
+
+        // Poll the server every 0.25 seconds to update feeds
+        setInterval(updateFeeds, 250);
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="{{ url_for('static', filename='images/hackgtlogo.png') }}" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+                SentinelCV
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Room Tracker</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('patients') }}">Patient Dashboard</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4"><strong>Patient Monitoring Dashboard</strong></h1>
+        <div id="patient-feed-container" class="d-flex flex-wrap justify-content-center">
+            <!-- Dynamic patient feeds will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
