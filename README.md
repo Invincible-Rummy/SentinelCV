@@ -1,3 +1,4 @@
+## SentinelCV
 ### Inspiration
 
 Exploring the field of healthcare, we searched high and low for issues that weren't well noticed but nevertheless had huge implications on patients. Eventually, we came across the problem of pressure ulcers, or "Bedsores," which are an extremely common yet preventable complication that is rarely addressed by hospitals. Pressure ulcers occur when a patient lies in the same position for long periods of time, putting pressure on the joints and causing damage to tissue and skin. These can severely impact patient health and quality of life, and they affect approximately **2.5 million** patients each year, being the **second most common cause of lawsuits** ([source](https://www.ahrq.gov/patient-safety/settings/hospital/resource/pressureulcer/tool/pu1.html)). In addition to these, we found many more concerning statistics regarding pressure ulcers such as:
